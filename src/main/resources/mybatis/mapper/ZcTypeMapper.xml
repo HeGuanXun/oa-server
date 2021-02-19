@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgx.common.dao.ZcTypeDao">
+	<resultMap id="result_ZcType_Map" type="com.hgx.common.entity.ZcType">
+		<id column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="upType" property="upType" />
+		<result column="useTime" property="useTime" />
+		<result column="ifMinType" property="ifMinType" />
+		<result column="remark" property="remark" />
+	</resultMap>
+
+	<sql id="zc_type_Column">
+		id,name,upType,useTime,ifMinType,remark
+	</sql>
+
+	<!--获得类名为:ZcType对应的数据库表的数据总行数 -->
+	<select id="getZcTypeRowCount" parameterType="com.hgx.common.utils.Assist" resultType="java.lang.Long">
+		select count(*) from zc_type
+		<if test="require!=null">
+			<include refid="assist" />
+		</if>
+	</select>
+
+	<!-- 获得类名为:ZcType对应数据库中表的数据集合 -->
+	<select id="selectZcType" parameterType="com.hgx.common.utils.Assist" resultMap="result_ZcType_Map">
+		select * from (
+			select
+		<choose>
+			<when test="resultColumn!=null">${resultColumn}</when>
+			<otherwise><include refid="zc_type_Column" /></otherwise>
+		</choose>
+			from zc_type
+		<if test="require!=null"><include refid="assist" /></if>
+		<if test="order !=null">${order}</if>
+			) result
+		<choose>
+			<when test="startRow!=null">where page &gt; #{startRow} <if test="rowSize!=null">and page &lt;= <if test="startRow!=null">#{startRow}+</if>#{rowSize} </if></when>
+			<otherwise><if test="rowSize!=null">where page &lt;= #{rowSize}</if></otherwise>
+		</choose>
+	</select>
+		<!-- 通过ZcType的id获得对应数据库中表的数据对象 -->
+		<select id="selectZcTypeById" parameterType="Integer" resultMap="result_ZcType_Map">
+		select
+			<include refid="zc_type_Column" />
+		from zc_type
+		where id = #{id}
+		</select>
+
+	<!-- 获得一个ZcType对象,以参数ZcType对象中不为空的属性作为条件进行查询 -->
+	<select id="selectZcTypeObjSingle" parameterType="com.hgx.common.entity.ZcType" resultMap="result_ZcType_Map">
+		select top 1
+		<include refid="zc_type_Column" />
+		from zc_type
+		<where>
+			<if test="name != null"> and name = #{name}</if>
+			<if test="upType != null"> and upType = #{upType}</if>
+			<if test="useTime != null"> and useTime = #{useTime}</if>
+			<if test="ifMinType != null"> and ifMinType = #{ifMinType}</if>
+			<if test="remark != null"> and remark = #{remark}</if>
+			<if test="id != null"> and id = #{id} </if>
+		</where>
+		LIMIT 1
+	</select>
+
+	<!-- 获得ZcType对象,以参数ZcType对象中不为空的属性作为条件进行查询 -->
+	<select id="selectZcTypeByObj" parameterType="com.hgx.common.entity.ZcType" resultMap="result_ZcType_Map">
+		select
+		<include refid="zc_type_Column" />
+		from zc_type
+		<where>
+			<if test="name != null"> and name = #{name}</if>
+			<if test="upType != null"> and upType = #{upType}</if>
+			<if test="useTime != null"> and useTime = #{useTime}</if>
+			<if test="ifMinType != null"> and ifMinType = #{ifMinType}</if>
+			<if test="remark != null"> and remark = #{remark}</if>
+			<if test="id != null"> and id = #{id} </if>
+		</where>
+	</select>
+
+	<!-- 将ZcType中属性值不为null的数据,插入到对应数据库的表中 -->
+	<insert id="insertNotNullZcType" parameterType="com.hgx.common.entity.ZcType">
+		insert into zc_type
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">id,</if>
+			<if test="name != null">name,</if>
+			<if test="upType != null">upType,</if>
+			<if test="useTime != null">useTime,</if>
+			<if test="ifMinType != null">ifMinType,</if>
+			<if test="remark != null">remark,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">#{id},</if>
+			<if test="name != null">#{name},</if>
+			<if test="upType != null">#{upType},</if>
+			<if test="useTime != null">#{useTime},</if>
+			<if test="ifMinType != null">#{ifMinType},</if>
+			<if test="remark != null">#{remark},</if>
+		</trim>
+	</insert>
+
+	<!-- 将ZcType批量插入到对应数据库的表中 -->
+	<insert id="insertZcTypeByBatch" parameterType="ArrayList">
+		insert into zc_type(id,name,upType,useTime,ifMinType,remark) values
+		<foreach collection="list" item="item" index="index"
+				 separator=",">
+			(#{item.id},#{item.name},#{item.upType},#{item.useTime},#{item.ifMinType},#{item.remark})
+		</foreach>
+	</insert>
+
+		<!-- 通过ZcType的id将数据库表中对应的数据删除 -->
+		<delete id="deleteZcTypeById" parameterType="Integer">
+		delete from zc_type
+		where  id  =  #{id}
+		</delete>
+
+		<!-- 通过ZcType的id将ZcType中属性值不为null的数据更新到数据库对应的表中 -->
+		<update id="updateNotNullZcTypeById" parameterType="com.hgx.common.entity.ZcType">
+		update zc_type
+			<set>
+				<if test="name != null">name = #{name},</if>
+				<if test="upType != null">upType = #{upType},</if>
+				<if test="useTime != null">useTime = #{useTime},</if>
+				<if test="ifMinType != null">ifMinType = #{ifMinType},</if>
+				<if test="remark != null">remark = #{remark},</if>
+			</set>
+		where id = #{id}
+		</update>
+	<!-- assist是查询辅助工具类, ${req.require}表示列名,#{req.value}表示值它是防SQL注入的 -->
+	<sql id="assist">
+		<where>
+			<foreach collection="require" item="req" separator=" ">
+				${req.require}
+				<if test="req.value != null">
+					#{req.value}
+				</if>
+				<if test="req.values != null">
+					<foreach collection="req.values" item="value" separator=",">
+						#{value}
+					</foreach>
+				</if>
+				<if test="req.customRequire !=null">
+					<foreach collection="req.customRequire" item="cr" separator=" ">
+						${cr.require}
+						<if test="cr.value != null">
+							#{cr.value}
+						</if>
+						<if test="cr.values != null">
+							<foreach collection="cr.values" item="value"
+									 separator=",">
+								#{value}
+							</foreach>
+						</if>
+						<if test="cr.suffix != null"> ${cr.suffix}</if>
+					</foreach>
+				</if>
+				<if test="req.suffix != null"> ${req.suffix}</if>
+			</foreach>
+		</where>
+	</sql>
+
+	<!-- updateAssist用于更新数据查询辅助工具类,作用assist与一致 -->
+	<sql id="updateAssist">
+		<where>
+			<foreach collection="assist.require" item="req" separator=" ">
+				${req.require}
+				<if test="req.value != null">
+					#{req.value}
+				</if>
+				<if test="req.values != null">
+					<foreach collection="req.values" item="value" separator=",">
+						#{value}
+					</foreach>
+				</if>
+				<if test="req.customRequire !=null">
+					<foreach collection="req.customRequire" item="cr" separator=" ">
+						${cr.require}
+						<if test="cr.value != null">
+							#{cr.value}
+						</if>
+						<if test="cr.values != null">
+							<foreach collection="cr.values" item="value"
+									 separator=",">
+								#{value}
+							</foreach>
+						</if>
+						<if test="cr.suffix != null"> ${cr.suffix}</if>
+					</foreach>
+				</if>
+				<if test="req.suffix != null"> ${req.suffix}</if>
+			</foreach>
+		</where>
+	</sql>
+
+</mapper>
