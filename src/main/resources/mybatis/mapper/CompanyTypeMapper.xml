@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgx.common.dao.CompanyTypeDao">
+	<resultMap id="result_CompanyType_Map" type="com.hgx.common.entity.CompanyType">
+		<id column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="type" property="type" />
+		<result column="useTime" property="useTime" />
+		<result column="ifMinType" property="ifMinType" />
+		<result column="remark" property="remark" />
+	</resultMap>
+
+	<sql id="company_type_Column">
+		id,name,type,useTime,ifMinType,remark
+	</sql>
+
+	<!--获得类名为:CompanyType对应的数据库表的数据总行数 -->
+	<select id="getCompanyTypeRowCount" parameterType="com.hgx.common.utils.Assist" resultType="java.lang.Long">
+		select count(*) from company_type
+		<if test="require!=null">
+			<include refid="assist" />
+		</if>
+	</select>
+
+	<!-- 获得类名为:CompanyType对应数据库中表的数据集合 -->
+	<select id="selectCompanyType" parameterType="com.hgx.common.utils.Assist" resultMap="result_CompanyType_Map">
+		select * from (
+			select
+		<choose>
+			<when test="resultColumn!=null">${resultColumn}</when>
+			<otherwise><include refid="company_type_Column" /></otherwise>
+		</choose>
+			from company_type
+		<if test="require!=null"><include refid="assist" /></if>
+		<if test="order !=null">${order}</if>
+			) result
+		<choose>
+			<when test="startRow!=null">where page &gt; #{startRow} <if test="rowSize!=null">and page &lt;= <if test="startRow!=null">#{startRow}+</if>#{rowSize} </if></when>
+			<otherwise><if test="rowSize!=null">where page &lt;= #{rowSize}</if></otherwise>
+		</choose>
+	</select>
+		<!-- 通过CompanyType的id获得对应数据库中表的数据对象 -->
+		<select id="selectCompanyTypeById" parameterType="Integer" resultMap="result_CompanyType_Map">
+		select
+			<include refid="company_type_Column" />
+		from company_type
+		where id = #{id}
+		</select>
+
+	<!-- 获得一个CompanyType对象,以参数CompanyType对象中不为空的属性作为条件进行查询 -->
+	<select id="selectCompanyTypeObjSingle" parameterType="com.hgx.common.entity.CompanyType" resultMap="result_CompanyType_Map">
+		select top 1
+		<include refid="company_type_Column" />
+		from company_type
+		<where>
+			<if test="name != null"> and name = #{name}</if>
+			<if test="type != null"> and type = #{type}</if>
+			<if test="useTime != null"> and useTime = #{useTime}</if>
+			<if test="ifMinType != null"> and ifMinType = #{ifMinType}</if>
+			<if test="remark != null"> and remark = #{remark}</if>
+			<if test="id != null"> and id = #{id} </if>
+		</where>
+		LIMIT 1
+	</select>
+
+	<!-- 获得CompanyType对象,以参数CompanyType对象中不为空的属性作为条件进行查询 -->
+	<select id="selectCompanyTypeByObj" parameterType="com.hgx.common.entity.CompanyType" resultMap="result_CompanyType_Map">
+		select
+		<include refid="company_type_Column" />
+		from company_type
+		<where>
+			<if test="name != null"> and name = #{name}</if>
+			<if test="type != null"> and type = #{type}</if>
+			<if test="useTime != null"> and useTime = #{useTime}</if>
+			<if test="ifMinType != null"> and ifMinType = #{ifMinType}</if>
+			<if test="remark != null"> and remark = #{remark}</if>
+			<if test="id != null"> and id = #{id} </if>
+		</where>
+	</select>
+
+	<!-- 将CompanyType中属性值不为null的数据,插入到对应数据库的表中 -->
+	<insert id="insertNotNullCompanyType" parameterType="com.hgx.common.entity.CompanyType">
+		insert into company_type
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">id,</if>
+			<if test="name != null">name,</if>
+			<if test="type != null">type,</if>
+			<if test="useTime != null">useTime,</if>
+			<if test="ifMinType != null">ifMinType,</if>
+			<if test="remark != null">remark,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">#{id},</if>
+			<if test="name != null">#{name},</if>
+			<if test="type != null">#{type},</if>
+			<if test="useTime != null">#{useTime},</if>
+			<if test="ifMinType != null">#{ifMinType},</if>
+			<if test="remark != null">#{remark},</if>
+		</trim>
+	</insert>
+
+	<!-- 将CompanyType批量插入到对应数据库的表中 -->
+	<insert id="insertCompanyTypeByBatch" parameterType="ArrayList">
+		insert into company_type(id,name,type,useTime,ifMinType,remark) values
+		<foreach collection="list" item="item" index="index"
+				 separator=",">
+			(#{item.id},#{item.name},#{item.type},#{item.useTime},#{item.ifMinType},#{item.remark})
+		</foreach>
+	</insert>
+
+		<!-- 通过CompanyType的id将数据库表中对应的数据删除 -->
+		<delete id="deleteCompanyTypeById" parameterType="Integer">
+		delete from company_type
+		where  id  =  #{id}
+		</delete>
+
+		<!-- 通过CompanyType的id将CompanyType中属性值不为null的数据更新到数据库对应的表中 -->
+		<update id="updateNotNullCompanyTypeById" parameterType="com.hgx.common.entity.CompanyType">
+		update company_type
+			<set>
+				<if test="name != null">name = #{name},</if>
+				<if test="type != null">type = #{type},</if>
+				<if test="useTime != null">useTime = #{useTime},</if>
+				<if test="ifMinType != null">ifMinType = #{ifMinType},</if>
+				<if test="remark != null">remark = #{remark},</if>
+			</set>
+		where id = #{id}
+		</update>
+	<!-- assist是查询辅助工具类, ${req.require}表示列名,#{req.value}表示值它是防SQL注入的 -->
+	<sql id="assist">
+		<where>
+			<foreach collection="require" item="req" separator=" ">
+				${req.require}
+				<if test="req.value != null">
+					#{req.value}
+				</if>
+				<if test="req.values != null">
+					<foreach collection="req.values" item="value" separator=",">
+						#{value}
+					</foreach>
+				</if>
+				<if test="req.customRequire !=null">
+					<foreach collection="req.customRequire" item="cr" separator=" ">
+						${cr.require}
+						<if test="cr.value != null">
+							#{cr.value}
+						</if>
+						<if test="cr.values != null">
+							<foreach collection="cr.values" item="value"
+									 separator=",">
+								#{value}
+							</foreach>
+						</if>
+						<if test="cr.suffix != null"> ${cr.suffix}</if>
+					</foreach>
+				</if>
+				<if test="req.suffix != null"> ${req.suffix}</if>
+			</foreach>
+		</where>
+	</sql>
+
+	<!-- updateAssist用于更新数据查询辅助工具类,作用assist与一致 -->
+	<sql id="updateAssist">
+		<where>
+			<foreach collection="assist.require" item="req" separator=" ">
+				${req.require}
+				<if test="req.value != null">
+					#{req.value}
+				</if>
+				<if test="req.values != null">
+					<foreach collection="req.values" item="value" separator=",">
+						#{value}
+					</foreach>
+				</if>
+				<if test="req.customRequire !=null">
+					<foreach collection="req.customRequire" item="cr" separator=" ">
+						${cr.require}
+						<if test="cr.value != null">
+							#{cr.value}
+						</if>
+						<if test="cr.values != null">
+							<foreach collection="cr.values" item="value"
+									 separator=",">
+								#{value}
+							</foreach>
+						</if>
+						<if test="cr.suffix != null"> ${cr.suffix}</if>
+					</foreach>
+				</if>
+				<if test="req.suffix != null"> ${req.suffix}</if>
+			</foreach>
+		</where>
+	</sql>
+
+</mapper>

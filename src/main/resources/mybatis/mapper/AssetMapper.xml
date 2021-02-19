@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgx.common.dao.AssetDao">
+	<resultMap id="result_Asset_Map" type="com.hgx.common.entity.Asset">
+		<id column="id" property="id" />
+		<result column="num" property="num" />
+		<result column="name" property="name" />
+		<result column="assetTypeOne" property="assetTypeOne" />
+		<result column="assetTypeTwo" property="assetTypeTwo" />
+		<result column="specification" property="specification" />
+		<result column="store" property="store" />
+		<result column="unit" property="unit" />
+		<result column="count" property="count" />
+		<result column="cost" property="cost" />
+		<result column="marketValuation" property="marketValuation" />
+		<result column="manager" property="manager" />
+		<result column="status" property="status" />
+		<result column="location" property="location" />
+		<result column="remark" property="remark" />
+		<result column="registerTime" property="registerTime" />
+	</resultMap>
+
+	<sql id="asset_Column">
+		id,num,name,assetTypeOne,assetTypeTwo,specification,store,unit,count,cost,marketValuation,manager,status,location,remark,registerTime
+	</sql>
+
+	<!--获得类名为:Asset对应的数据库表的数据总行数 -->
+	<select id="getAssetRowCount" parameterType="com.hgx.common.utils.Assist" resultType="java.lang.Long">
+		select count(*) from asset
+		<if test="require!=null">
+			<include refid="assist" />
+		</if>
+	</select>
+
+	<!-- 获得类名为:Asset对应数据库中表的数据集合 -->
+	<select id="selectAsset" parameterType="com.hgx.common.utils.Assist" resultMap="result_Asset_Map">
+		select * from (
+			select
+		<choose>
+			<when test="resultColumn!=null">${resultColumn}</when>
+			<otherwise><include refid="asset_Column" /></otherwise>
+		</choose>
+			from asset
+		<if test="require!=null"><include refid="assist" /></if>
+		<if test="order !=null">${order}</if>
+			) result
+		<choose>
+			<when test="startRow!=null">where page &gt; #{startRow} <if test="rowSize!=null">and page &lt;= <if test="startRow!=null">#{startRow}+</if>#{rowSize} </if></when>
+			<otherwise><if test="rowSize!=null">where page &lt;= #{rowSize}</if></otherwise>
+		</choose>
+	</select>
+		<!-- 通过Asset的id获得对应数据库中表的数据对象 -->
+		<select id="selectAssetById" parameterType="Integer" resultMap="result_Asset_Map">
+		select
+			<include refid="asset_Column" />
+		from asset
+		where id = #{id}
+		</select>
+
+	<!-- 获得一个Asset对象,以参数Asset对象中不为空的属性作为条件进行查询 -->
+	<select id="selectAssetObjSingle" parameterType="com.hgx.common.entity.Asset" resultMap="result_Asset_Map">
+		select top 1
+		<include refid="asset_Column" />
+		from asset
+		<where>
+			<if test="num != null"> and num = #{num}</if>
+			<if test="name != null"> and name = #{name}</if>
+			<if test="assetTypeOne != null"> and assetTypeOne = #{assetTypeOne}</if>
+			<if test="assetTypeTwo != null"> and assetTypeTwo = #{assetTypeTwo}</if>
+			<if test="specification != null"> and specification = #{specification}</if>
+			<if test="store != null"> and store = #{store}</if>
+			<if test="unit != null"> and unit = #{unit}</if>
+			<if test="count != null"> and count = #{count}</if>
+			<if test="cost != null"> and cost = #{cost}</if>
+			<if test="marketValuation != null"> and marketValuation = #{marketValuation}</if>
+			<if test="manager != null"> and manager = #{manager}</if>
+			<if test="status != null"> and status = #{status}</if>
+			<if test="location != null"> and location = #{location}</if>
+			<if test="remark != null"> and remark = #{remark}</if>
+			<if test="registerTime != null"> and registerTime = #{registerTime}</if>
+			<if test="id != null"> and id = #{id} </if>
+		</where>
+		LIMIT 1
+	</select>
+
+	<!-- 获得Asset对象,以参数Asset对象中不为空的属性作为条件进行查询 -->
+	<select id="selectAssetByObj" parameterType="com.hgx.common.entity.Asset" resultMap="result_Asset_Map">
+		select
+		<include refid="asset_Column" />
+		from asset
+		<where>
+			<if test="num != null"> and num = #{num}</if>
+			<if test="name != null"> and name = #{name}</if>
+			<if test="assetTypeOne != null"> and assetTypeOne = #{assetTypeOne}</if>
+			<if test="assetTypeTwo != null"> and assetTypeTwo = #{assetTypeTwo}</if>
+			<if test="specification != null"> and specification = #{specification}</if>
+			<if test="store != null"> and store = #{store}</if>
+			<if test="unit != null"> and unit = #{unit}</if>
+			<if test="count != null"> and count = #{count}</if>
+			<if test="cost != null"> and cost = #{cost}</if>
+			<if test="marketValuation != null"> and marketValuation = #{marketValuation}</if>
+			<if test="manager != null"> and manager = #{manager}</if>
+			<if test="status != null"> and status = #{status}</if>
+			<if test="location != null"> and location = #{location}</if>
+			<if test="remark != null"> and remark = #{remark}</if>
+			<if test="registerTime != null"> and registerTime = #{registerTime}</if>
+			<if test="id != null"> and id = #{id} </if>
+		</where>
+	</select>
+
+	<!-- 将Asset中属性值不为null的数据,插入到对应数据库的表中 -->
+	<insert id="insertNotNullAsset" parameterType="com.hgx.common.entity.Asset">
+		insert into asset
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">id,</if>
+			<if test="num != null">num,</if>
+			<if test="name != null">name,</if>
+			<if test="assetTypeOne != null">assetTypeOne,</if>
+			<if test="assetTypeTwo != null">assetTypeTwo,</if>
+			<if test="specification != null">specification,</if>
+			<if test="store != null">store,</if>
+			<if test="unit != null">unit,</if>
+			<if test="count != null">count,</if>
+			<if test="cost != null">cost,</if>
+			<if test="marketValuation != null">marketValuation,</if>
+			<if test="manager != null">manager,</if>
+			<if test="status != null">status,</if>
+			<if test="location != null">location,</if>
+			<if test="remark != null">remark,</if>
+			<if test="registerTime != null">registerTime,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">#{id},</if>
+			<if test="num != null">#{num},</if>
+			<if test="name != null">#{name},</if>
+			<if test="assetTypeOne != null">#{assetTypeOne},</if>
+			<if test="assetTypeTwo != null">#{assetTypeTwo},</if>
+			<if test="specification != null">#{specification},</if>
+			<if test="store != null">#{store},</if>
+			<if test="unit != null">#{unit},</if>
+			<if test="count != null">#{count},</if>
+			<if test="cost != null">#{cost},</if>
+			<if test="marketValuation != null">#{marketValuation},</if>
+			<if test="manager != null">#{manager},</if>
+			<if test="status != null">#{status},</if>
+			<if test="location != null">#{location},</if>
+			<if test="remark != null">#{remark},</if>
+			<if test="registerTime != null">#{registerTime},</if>
+		</trim>
+	</insert>
+
+	<!-- 将Asset批量插入到对应数据库的表中 -->
+	<insert id="insertAssetByBatch" parameterType="ArrayList">
+		insert into asset(id,num,name,assetTypeOne,assetTypeTwo,specification,store,unit,count,cost,marketValuation,manager,status,location,remark,registerTime) values
+		<foreach collection="list" item="item" index="index"
+				 separator=",">
+			(#{item.id},#{item.num},#{item.name},#{item.assetTypeOne},#{item.assetTypeTwo},#{item.specification},#{item.store},#{item.unit},#{item.count},#{item.cost},#{item.marketValuation},#{item.manager},#{item.status},#{item.location},#{item.remark},#{item.registerTime})
+		</foreach>
+	</insert>
+
+		<!-- 通过Asset的id将数据库表中对应的数据删除 -->
+		<delete id="deleteAssetById" parameterType="Integer">
+		delete from asset
+		where  id  =  #{id}
+		</delete>
+
+		<!-- 通过Asset的id将Asset中属性值不为null的数据更新到数据库对应的表中 -->
+		<update id="updateNotNullAssetById" parameterType="com.hgx.common.entity.Asset">
+		update asset
+			<set>
+				<if test="num != null">num = #{num},</if>
+				<if test="name != null">name = #{name},</if>
+				<if test="assetTypeOne != null">assetTypeOne = #{assetTypeOne},</if>
+				<if test="assetTypeTwo != null">assetTypeTwo = #{assetTypeTwo},</if>
+				<if test="specification != null">specification = #{specification},</if>
+				<if test="store != null">store = #{store},</if>
+				<if test="unit != null">unit = #{unit},</if>
+				<if test="count != null">count = #{count},</if>
+				<if test="cost != null">cost = #{cost},</if>
+				<if test="marketValuation != null">marketValuation = #{marketValuation},</if>
+				<if test="manager != null">manager = #{manager},</if>
+				<if test="status != null">status = #{status},</if>
+				<if test="location != null">location = #{location},</if>
+				<if test="remark != null">remark = #{remark},</if>
+				<if test="registerTime != null">registerTime = #{registerTime},</if>
+			</set>
+		where id = #{id}
+		</update>
+	<!-- assist是查询辅助工具类, ${req.require}表示列名,#{req.value}表示值它是防SQL注入的 -->
+	<sql id="assist">
+		<where>
+			<foreach collection="require" item="req" separator=" ">
+				${req.require}
+				<if test="req.value != null">
+					#{req.value}
+				</if>
+				<if test="req.values != null">
+					<foreach collection="req.values" item="value" separator=",">
+						#{value}
+					</foreach>
+				</if>
+				<if test="req.customRequire !=null">
+					<foreach collection="req.customRequire" item="cr" separator=" ">
+						${cr.require}
+						<if test="cr.value != null">
+							#{cr.value}
+						</if>
+						<if test="cr.values != null">
+							<foreach collection="cr.values" item="value"
+									 separator=",">
+								#{value}
+							</foreach>
+						</if>
+						<if test="cr.suffix != null"> ${cr.suffix}</if>
+					</foreach>
+				</if>
+				<if test="req.suffix != null"> ${req.suffix}</if>
+			</foreach>
+		</where>
+	</sql>
+
+	<!-- updateAssist用于更新数据查询辅助工具类,作用assist与一致 -->
+	<sql id="updateAssist">
+		<where>
+			<foreach collection="assist.require" item="req" separator=" ">
+				${req.require}
+				<if test="req.value != null">
+					#{req.value}
+				</if>
+				<if test="req.values != null">
+					<foreach collection="req.values" item="value" separator=",">
+						#{value}
+					</foreach>
+				</if>
+				<if test="req.customRequire !=null">
+					<foreach collection="req.customRequire" item="cr" separator=" ">
+						${cr.require}
+						<if test="cr.value != null">
+							#{cr.value}
+						</if>
+						<if test="cr.values != null">
+							<foreach collection="cr.values" item="value"
+									 separator=",">
+								#{value}
+							</foreach>
+						</if>
+						<if test="cr.suffix != null"> ${cr.suffix}</if>
+					</foreach>
+				</if>
+				<if test="req.suffix != null"> ${req.suffix}</if>
+			</foreach>
+		</where>
+	</sql>
+
+</mapper>

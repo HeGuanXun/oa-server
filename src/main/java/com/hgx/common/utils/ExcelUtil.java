@@ -2,6 +2,7 @@ package com.hgx.common.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import io.swagger.annotations.ApiModelProperty;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -14,6 +15,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -69,10 +71,11 @@ public class ExcelUtil {
      * @param fileName
      * @param response
      */
+    @JsonBackReference
     public static <T> String export(List<T> list,Field[] fields,String[] title,String sheetName,String fileName,HttpServletResponse response){
         String[][] content = new String[list.size()][];
         for (int i = 0; i < list.size(); i++) {
-            Map<String, String> stringObjectMap = JSON.parseObject(JSON.toJSONString(list.get(i)), new TypeReference<Map<String, String>>() {});
+            Map<String, String> stringObjectMap = toJsonString(list.get(i));
             content[i] = new String[fields.length];
             for (int j = 0; j < fields.length; j++) {
                 String name = fields[j].getName();
@@ -87,6 +90,20 @@ public class ExcelUtil {
             ExcelUtil.getHSSFWorkbook(sheetName, title, content,response,fileName);
         }
         return null;
+    }
+
+    public static HashMap<String, String> toJsonString(Object t){
+        HashMap<String, String> objectObjectHashMap = new HashMap<>();
+        Field[] fields = t.getClass().getDeclaredFields();
+        try {
+            for (Field field : fields) {
+                field.setAccessible(true);
+                objectObjectHashMap.put(field.getName(), (String) field.get(t));
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return objectObjectHashMap;
     }
 
     /**
