@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.common.server</groupId>
-    <artifactId>electricity-server</artifactId>
+    <artifactId>oa-server</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>common-server</name>
+    <name>oa-server</name>
     <description>统一平台</description>
 
     <properties>
