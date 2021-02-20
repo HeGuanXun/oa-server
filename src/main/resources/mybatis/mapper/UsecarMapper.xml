@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgx.common.dao.UsecarDao">
+	<resultMap id="result_Usecar_Map" type="com.hgx.common.entity.Usecar">
+		<id column="id" property="id" />
+		<result column="local" property="local" />
+		<result column="startTime" property="startTime" />
+		<result column="endTime" property="endTime" />
+		<result column="leaveCount" property="leaveCount" />
+		<result column="reason" property="reason" />
+	</resultMap>
+
+	<sql id="usecar_Column">
+		id,local,startTime,endTime,leaveCount,reason
+	</sql>
+
+	<!--获得类名为:Usecar对应的数据库表的数据总行数 -->
+	<select id="getUsecarRowCount" parameterType="com.hgx.common.utils.Assist" resultType="java.lang.Long">
+		select count(*) from usecar
+		<if test="require!=null">
+			<include refid="assist" />
+		</if>
+	</select>
+
+	<!-- 获得类名为:Usecar对应数据库中表的数据集合 -->
+	<select id="selectUsecar" parameterType="com.hgx.common.utils.Assist" resultMap="result_Usecar_Map">
+		select * from (
+			select
+		<choose>
+			<when test="resultColumn!=null">${resultColumn}</when>
+			<otherwise><include refid="usecar_Column" /></otherwise>
+		</choose>
+			from usecar
+		<if test="require!=null"><include refid="assist" /></if>
+		<if test="order !=null">${order}</if>
+			) result
+		<choose>
+			<when test="startRow!=null">where page &gt; #{startRow} <if test="rowSize!=null">and page &lt;= <if test="startRow!=null">#{startRow}+</if>#{rowSize} </if></when>
+			<otherwise><if test="rowSize!=null">where page &lt;= #{rowSize}</if></otherwise>
+		</choose>
+	</select>
+		<!-- 通过Usecar的id获得对应数据库中表的数据对象 -->
+		<select id="selectUsecarById" parameterType="Integer" resultMap="result_Usecar_Map">
+		select
+			<include refid="usecar_Column" />
+		from usecar
+		where id = #{id}
+		</select>
+
+	<!-- 获得一个Usecar对象,以参数Usecar对象中不为空的属性作为条件进行查询 -->
+	<select id="selectUsecarObjSingle" parameterType="com.hgx.common.entity.Usecar" resultMap="result_Usecar_Map">
+		select top 1
+		<include refid="usecar_Column" />
+		from usecar
+		<where>
+			<if test="local != null"> and local = #{local}</if>
+			<if test="startTime != null"> and startTime = #{startTime}</if>
+			<if test="endTime != null"> and endTime = #{endTime}</if>
+			<if test="leaveCount != null"> and leaveCount = #{leaveCount}</if>
+			<if test="reason != null"> and reason = #{reason}</if>
+			<if test="id != null"> and id = #{id} </if>
+		</where>
+		LIMIT 1
+	</select>
+
+	<!-- 获得Usecar对象,以参数Usecar对象中不为空的属性作为条件进行查询 -->
+	<select id="selectUsecarByObj" parameterType="com.hgx.common.entity.Usecar" resultMap="result_Usecar_Map">
+		select
+		<include refid="usecar_Column" />
+		from usecar
+		<where>
+			<if test="local != null"> and local = #{local}</if>
+			<if test="startTime != null"> and startTime = #{startTime}</if>
+			<if test="endTime != null"> and endTime = #{endTime}</if>
+			<if test="leaveCount != null"> and leaveCount = #{leaveCount}</if>
+			<if test="reason != null"> and reason = #{reason}</if>
+			<if test="id != null"> and id = #{id} </if>
+		</where>
+	</select>
+
+	<!-- 将Usecar中属性值不为null的数据,插入到对应数据库的表中 -->
+	<insert id="insertNotNullUsecar" parameterType="com.hgx.common.entity.Usecar">
+		insert into usecar
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">id,</if>
+			<if test="local != null">local,</if>
+			<if test="startTime != null">startTime,</if>
+			<if test="endTime != null">endTime,</if>
+			<if test="leaveCount != null">leaveCount,</if>
+			<if test="reason != null">reason,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">#{id},</if>
+			<if test="local != null">#{local},</if>
+			<if test="startTime != null">#{startTime},</if>
+			<if test="endTime != null">#{endTime},</if>
+			<if test="leaveCount != null">#{leaveCount},</if>
+			<if test="reason != null">#{reason},</if>
+		</trim>
+	</insert>
+
+	<!-- 将Usecar批量插入到对应数据库的表中 -->
+	<insert id="insertUsecarByBatch" parameterType="ArrayList">
+		insert into usecar(id,local,startTime,endTime,leaveCount,reason) values
+		<foreach collection="list" item="item" index="index"
+				 separator=",">
+			(#{item.id},#{item.local},#{item.startTime},#{item.endTime},#{item.leaveCount},#{item.reason})
+		</foreach>
+	</insert>
+
+		<!-- 通过Usecar的id将数据库表中对应的数据删除 -->
+		<delete id="deleteUsecarById" parameterType="Integer">
+		delete from usecar
+		where  id  =  #{id}
+		</delete>
+
+		<!-- 通过Usecar的id将Usecar中属性值不为null的数据更新到数据库对应的表中 -->
+		<update id="updateNotNullUsecarById" parameterType="com.hgx.common.entity.Usecar">
+		update usecar
+			<set>
+				<if test="local != null">local = #{local},</if>
+				<if test="startTime != null">startTime = #{startTime},</if>
+				<if test="endTime != null">endTime = #{endTime},</if>
+				<if test="leaveCount != null">leaveCount = #{leaveCount},</if>
+				<if test="reason != null">reason = #{reason},</if>
+			</set>
+		where id = #{id}
+		</update>
+	<!-- assist是查询辅助工具类, ${req.require}表示列名,#{req.value}表示值它是防SQL注入的 -->
+	<sql id="assist">
+		<where>
+			<foreach collection="require" item="req" separator=" ">
+				${req.require}
+				<if test="req.value != null">
+					#{req.value}
+				</if>
+				<if test="req.values != null">
+					<foreach collection="req.values" item="value" separator=",">
+						#{value}
+					</foreach>
+				</if>
+				<if test="req.customRequire !=null">
+					<foreach collection="req.customRequire" item="cr" separator=" ">
+						${cr.require}
+						<if test="cr.value != null">
+							#{cr.value}
+						</if>
+						<if test="cr.values != null">
+							<foreach collection="cr.values" item="value"
+									 separator=",">
+								#{value}
+							</foreach>
+						</if>
+						<if test="cr.suffix != null"> ${cr.suffix}</if>
+					</foreach>
+				</if>
+				<if test="req.suffix != null"> ${req.suffix}</if>
+			</foreach>
+		</where>
+	</sql>
+
+	<!-- updateAssist用于更新数据查询辅助工具类,作用assist与一致 -->
+	<sql id="updateAssist">
+		<where>
+			<foreach collection="assist.require" item="req" separator=" ">
+				${req.require}
+				<if test="req.value != null">
+					#{req.value}
+				</if>
+				<if test="req.values != null">
+					<foreach collection="req.values" item="value" separator=",">
+						#{value}
+					</foreach>
+				</if>
+				<if test="req.customRequire !=null">
+					<foreach collection="req.customRequire" item="cr" separator=" ">
+						${cr.require}
+						<if test="cr.value != null">
+							#{cr.value}
+						</if>
+						<if test="cr.values != null">
+							<foreach collection="cr.values" item="value"
+									 separator=",">
+								#{value}
+							</foreach>
+						</if>
+						<if test="cr.suffix != null"> ${cr.suffix}</if>
+					</foreach>
+				</if>
+				<if test="req.suffix != null"> ${req.suffix}</if>
+			</foreach>
+		</where>
+	</sql>
+
+</mapper>

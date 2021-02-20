@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgx.common.dao.BulletinDao">
+	<resultMap id="result_Bulletin_Map" type="com.hgx.common.entity.Bulletin">
+		<id column="id" property="id" />
+		<result column="num" property="num" />
+		<result column="type" property="type" />
+		<result column="bulletinPeriod" property="bulletinPeriod" />
+		<result column="createMan" property="createMan" />
+		<result column="submitTime" property="submitTime" />
+		<result column="status" property="status" />
+	</resultMap>
+
+	<sql id="bulletin_Column">
+		id,num,type,bulletinPeriod,createMan,submitTime,status
+	</sql>
+
+	<!--获得类名为:Bulletin对应的数据库表的数据总行数 -->
+	<select id="getBulletinRowCount" parameterType="com.hgx.common.utils.Assist" resultType="java.lang.Long">
+		select count(*) from bulletin
+		<if test="require!=null">
+			<include refid="assist" />
+		</if>
+	</select>
+
+	<!-- 获得类名为:Bulletin对应数据库中表的数据集合 -->
+	<select id="selectBulletin" parameterType="com.hgx.common.utils.Assist" resultMap="result_Bulletin_Map">
+		select * from (
+			select
+		<choose>
+			<when test="resultColumn!=null">${resultColumn}</when>
+			<otherwise><include refid="bulletin_Column" /></otherwise>
+		</choose>
+			from bulletin
+		<if test="require!=null"><include refid="assist" /></if>
+		<if test="order !=null">${order}</if>
+			) result
+		<choose>
+			<when test="startRow!=null">where page &gt; #{startRow} <if test="rowSize!=null">and page &lt;= <if test="startRow!=null">#{startRow}+</if>#{rowSize} </if></when>
+			<otherwise><if test="rowSize!=null">where page &lt;= #{rowSize}</if></otherwise>
+		</choose>
+	</select>
+		<!-- 通过Bulletin的id获得对应数据库中表的数据对象 -->
+		<select id="selectBulletinById" parameterType="Integer" resultMap="result_Bulletin_Map">
+		select
+			<include refid="bulletin_Column" />
+		from bulletin
+		where id = #{id}
+		</select>
+
+	<!-- 获得一个Bulletin对象,以参数Bulletin对象中不为空的属性作为条件进行查询 -->
+	<select id="selectBulletinObjSingle" parameterType="com.hgx.common.entity.Bulletin" resultMap="result_Bulletin_Map">
+		select top 1
+		<include refid="bulletin_Column" />
+		from bulletin
+		<where>
+			<if test="num != null"> and num = #{num}</if>
+			<if test="type != null"> and type = #{type}</if>
+			<if test="bulletinPeriod != null"> and bulletinPeriod = #{bulletinPeriod}</if>
+			<if test="createMan != null"> and createMan = #{createMan}</if>
+			<if test="submitTime != null"> and submitTime = #{submitTime}</if>
+			<if test="status != null"> and status = #{status}</if>
+			<if test="id != null"> and id = #{id} </if>
+		</where>
+		LIMIT 1
+	</select>
+
+	<!-- 获得Bulletin对象,以参数Bulletin对象中不为空的属性作为条件进行查询 -->
+	<select id="selectBulletinByObj" parameterType="com.hgx.common.entity.Bulletin" resultMap="result_Bulletin_Map">
+		select
+		<include refid="bulletin_Column" />
+		from bulletin
+		<where>
+			<if test="num != null"> and num = #{num}</if>
+			<if test="type != null"> and type = #{type}</if>
+			<if test="bulletinPeriod != null"> and bulletinPeriod = #{bulletinPeriod}</if>
+			<if test="createMan != null"> and createMan = #{createMan}</if>
+			<if test="submitTime != null"> and submitTime = #{submitTime}</if>
+			<if test="status != null"> and status = #{status}</if>
+			<if test="id != null"> and id = #{id} </if>
+		</where>
+	</select>
+
+	<!-- 将Bulletin中属性值不为null的数据,插入到对应数据库的表中 -->
+	<insert id="insertNotNullBulletin" parameterType="com.hgx.common.entity.Bulletin">
+		insert into bulletin
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">id,</if>
+			<if test="num != null">num,</if>
+			<if test="type != null">type,</if>
+			<if test="bulletinPeriod != null">bulletinPeriod,</if>
+			<if test="createMan != null">createMan,</if>
+			<if test="submitTime != null">submitTime,</if>
+			<if test="status != null">status,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">#{id},</if>
+			<if test="num != null">#{num},</if>
+			<if test="type != null">#{type},</if>
+			<if test="bulletinPeriod != null">#{bulletinPeriod},</if>
+			<if test="createMan != null">#{createMan},</if>
+			<if test="submitTime != null">#{submitTime},</if>
+			<if test="status != null">#{status},</if>
+		</trim>
+	</insert>
+
+	<!-- 将Bulletin批量插入到对应数据库的表中 -->
+	<insert id="insertBulletinByBatch" parameterType="ArrayList">
+		insert into bulletin(id,num,type,bulletinPeriod,createMan,submitTime,status) values
+		<foreach collection="list" item="item" index="index"
+				 separator=",">
+			(#{item.id},#{item.num},#{item.type},#{item.bulletinPeriod},#{item.createMan},#{item.submitTime},#{item.status})
+		</foreach>
+	</insert>
+
+		<!-- 通过Bulletin的id将数据库表中对应的数据删除 -->
+		<delete id="deleteBulletinById" parameterType="Integer">
+		delete from bulletin
+		where  id  =  #{id}
+		</delete>
+
+		<!-- 通过Bulletin的id将Bulletin中属性值不为null的数据更新到数据库对应的表中 -->
+		<update id="updateNotNullBulletinById" parameterType="com.hgx.common.entity.Bulletin">
+		update bulletin
+			<set>
+				<if test="num != null">num = #{num},</if>
+				<if test="type != null">type = #{type},</if>
+				<if test="bulletinPeriod != null">bulletinPeriod = #{bulletinPeriod},</if>
+				<if test="createMan != null">createMan = #{createMan},</if>
+				<if test="submitTime != null">submitTime = #{submitTime},</if>
+				<if test="status != null">status = #{status},</if>
+			</set>
+		where id = #{id}
+		</update>
+	<!-- assist是查询辅助工具类, ${req.require}表示列名,#{req.value}表示值它是防SQL注入的 -->
+	<sql id="assist">
+		<where>
+			<foreach collection="require" item="req" separator=" ">
+				${req.require}
+				<if test="req.value != null">
+					#{req.value}
+				</if>
+				<if test="req.values != null">
+					<foreach collection="req.values" item="value" separator=",">
+						#{value}
+					</foreach>
+				</if>
+				<if test="req.customRequire !=null">
+					<foreach collection="req.customRequire" item="cr" separator=" ">
+						${cr.require}
+						<if test="cr.value != null">
+							#{cr.value}
+						</if>
+						<if test="cr.values != null">
+							<foreach collection="cr.values" item="value"
+									 separator=",">
+								#{value}
+							</foreach>
+						</if>
+						<if test="cr.suffix != null"> ${cr.suffix}</if>
+					</foreach>
+				</if>
+				<if test="req.suffix != null"> ${req.suffix}</if>
+			</foreach>
+		</where>
+	</sql>
+
+	<!-- updateAssist用于更新数据查询辅助工具类,作用assist与一致 -->
+	<sql id="updateAssist">
+		<where>
+			<foreach collection="assist.require" item="req" separator=" ">
+				${req.require}
+				<if test="req.value != null">
+					#{req.value}
+				</if>
+				<if test="req.values != null">
+					<foreach collection="req.values" item="value" separator=",">
+						#{value}
+					</foreach>
+				</if>
+				<if test="req.customRequire !=null">
+					<foreach collection="req.customRequire" item="cr" separator=" ">
+						${cr.require}
+						<if test="cr.value != null">
+							#{cr.value}
+						</if>
+						<if test="cr.values != null">
+							<foreach collection="cr.values" item="value"
+									 separator=",">
+								#{value}
+							</foreach>
+						</if>
+						<if test="cr.suffix != null"> ${cr.suffix}</if>
+					</foreach>
+				</if>
+				<if test="req.suffix != null"> ${req.suffix}</if>
+			</foreach>
+		</where>
+	</sql>
+
+</mapper>
