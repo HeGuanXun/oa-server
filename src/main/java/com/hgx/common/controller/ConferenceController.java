@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * 何冠勋
  */
-@Api(value = "会议管理系统",tags = "会议管理系统")
+@Api(value = "会议管理系统",tags = "会议-会议管理系统")
 @RequestMapping(value = "/conference")
 @RestController
 public class ConferenceController{

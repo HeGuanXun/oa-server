@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * 何冠勋
  */
-@Api(value = "会议室管理系统",tags = "会议室管理系统")
+@Api(value = "会议室管理系统",tags = "会议-会议室管理系统")
 @RequestMapping(value = "/companyType")
 @RestController
 public class CompanyTypeController{
